@@ -19,7 +19,10 @@ class Expense:
     """
     amount: int
     category: int
-    expense_date: datetime = field(default_factory=datetime.now)
+    expense_date: datetime = field(default_factory=datetime.now)  # TODO: посмотерть представление времени
     added_date: datetime = field(default_factory=datetime.now)
     comment: str = ''
     pk: int = 0
+    
+# TODO: добавить валидацию данных (например, нельзя создать расход с отрицательной суммой)
+# можно через @property

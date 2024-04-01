@@ -15,7 +15,8 @@ def custom_class():
 def repo():
     return MemoryRepository()
 
-
+# TODO: некоторые тесты могут быть общимим для обеих БД, 
+# см. @pytest.mark.parametrize
 def test_crud(repo, custom_class):
     obj = custom_class()
     pk = repo.add(obj)

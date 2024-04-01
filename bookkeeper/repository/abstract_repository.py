@@ -15,7 +15,7 @@ class Model(Protocol):  # pylint: disable=too-few-public-methods
     """
     Модель должна содержать атрибут pk
     """
-    pk: int
+    pk: int  # TODO: or int | None(?)
 
 
 T = TypeVar('T', bound=Model)
@@ -33,7 +33,7 @@ class AbstractRepository(ABC, Generic[T]):
     """
 
     @abstractmethod
-    def add(self, obj: T) -> int:
+    def add(self, obj: T) -> int:  # TODO: or int | None(?)
         """
         Добавить объект в репозиторий, вернуть id объекта,
         также записать id в атрибут pk.
