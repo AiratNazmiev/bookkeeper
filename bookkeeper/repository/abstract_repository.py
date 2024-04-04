@@ -15,7 +15,7 @@ class Model(Protocol):  # pylint: disable=too-few-public-methods
     """
     Модель должна содержать атрибут pk
     """
-    pk: int  # TODO: or int | None(?)
+    pk: int | None # TODO: or int | None(?)
 
 
 T = TypeVar('T', bound=Model)
@@ -33,14 +33,14 @@ class AbstractRepository(ABC, Generic[T]):
     """
 
     @abstractmethod
-    def add(self, obj: T) -> int:  # TODO: or int | None(?)
+    def add(self, obj: T) -> int | None:  # TODO: or int | None(?)
         """
         Добавить объект в репозиторий, вернуть id объекта,
         также записать id в атрибут pk.
         """
 
     @abstractmethod
-    def get(self, pk: int) -> T | None:
+    def get(self, pk: int) -> T | None:  # TODO: написать про возвращение None
         """ Получить объект по id """
 
     @abstractmethod
@@ -49,6 +49,16 @@ class AbstractRepository(ABC, Generic[T]):
         Получить все записи по некоторому условию
         where - условие в виде словаря {'название_поля': значение}
         если условие не задано (по умолчанию), вернуть все записи
+        """
+        
+    @abstractmethod
+    def get_all_substr(self, where: dict[str, str]) -> list[T]:
+        """
+        Получить все записи по некоторому условию для строчного типа
+        where - условие в виде словаря {'название_поля': значение},
+        где значение имеет тип строки. Для выполнения условия проверки 
+        значения должны быть подстроками строки записи таблицы с полями
+        'название_поля'
         """
 
     @abstractmethod

@@ -70,3 +70,10 @@ def test_get_all_with_condition(repo, custom_class):
         objects.append(o)
     assert repo.get_all({'name': '0'}) == [objects[0]]
     assert repo.get_all({'test': 'test'}) == objects
+    
+def test_get_all_substr(repo, custom_class):
+    obj_list = [custom_class() for _ in range(7)]
+    for i, obj in enumerate(obj_list):
+        obj.str_field = str(i)+'smth'
+        repo.add(obj)
+    assert obj_list == repo.get_all_substr({'str_field' : 'smth'})

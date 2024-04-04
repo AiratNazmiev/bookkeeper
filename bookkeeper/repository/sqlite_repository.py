@@ -56,9 +56,11 @@ class SQLiteRepository(AbstractRepository[T]):
         with sqlite3.connect(self.db_file) as con:
             cur = con.cursor()
             row = cur.execute(
-                f'SELECT * FROM {self.table_name} WHERE ROWID=?', [pk]
+                f'SELECT * FROM {self.table_name} WHERE ROWID={pk}'
             ).fetchone()
         con.close()
+        if row is None:
+            return None
         return self._obj_adapter(pk, row)
     
     def get_all(self, where: dict[str, Any] | None = None) -> list[T]:
@@ -68,7 +70,7 @@ class SQLiteRepository(AbstractRepository[T]):
                 mask = [f'{f} LIKE ?' for f in where.keys()]
                 rows = cur.execute(
                     f'SELECT ROWID, * FROM {self.table_name} '
-                    f'WHERE {' AND '.join(mask)}',
+                    f'WHERE {" AND ".join(mask)}',
                     list(where.values())
                 ).fetchall()
             else:
@@ -78,6 +80,10 @@ class SQLiteRepository(AbstractRepository[T]):
         con.close()
         return [self._obj_adapter(pk=r[0], row=r[1:]) for r in rows]
     
+    def get_all_substr(self, where: dict[str, str]) -> list[T]:
+        substr_where = {f : f'%{s}%' for f, s  in where.items()}
+        return self.get_all(substr_where)
+    
     def update(self, obj: T) -> None:
         fields = ", ".join([f"{k}=?" for k in self.fields.keys()])
         values = [getattr(obj, f) for f in self.fields]
@@ -85,7 +91,7 @@ class SQLiteRepository(AbstractRepository[T]):
             cur = con.cursor()
             cur.execute(
                 f'UPDATE {self.table_name} SET {fields} '
-                f'WHERE ROWID=?', values + [obj.pk]
+                f'WHERE ROWID={obj.pk}', values
             )
             # не обновили ни одной записи
             if cur.rowcount == 0: 
@@ -95,18 +101,10 @@ class SQLiteRepository(AbstractRepository[T]):
     def delete(self, pk: int) -> None:
         with sqlite3.connect(self.db_file) as con:
             cur = con.cursor()
-            cur.execute(f'DELETE FROM {self.table_name} WHERE ROWID=?', [pk])
+            cur.execute(f'DELETE FROM {self.table_name} WHERE ROWID={pk}')
             
             if cur.rowcount == 0:
                 raise ValueError('attempt to delete object with unknown primary key')
         con.close()
     
-        
     
-        
-            
-            
-        
-    
-        
-        
