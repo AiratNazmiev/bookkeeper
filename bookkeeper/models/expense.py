@@ -19,8 +19,8 @@ class Expense:
     """
     amount: int
     category: int
-    expense_date: datetime = field(default_factory=datetime.now)  # TODO: посмотерть представление времени
-    added_date: datetime = field(default_factory=datetime.now)
+    expense_date: str = datetime.now().isoformat(sep='\t', timespec='minutes')
+    added_date: str = datetime.now().isoformat(sep='\t', timespec='minutes')
     comment: str = ''
     pk: int = 0
     
