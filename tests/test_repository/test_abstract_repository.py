@@ -1,6 +1,6 @@
-from bookkeeper.repository.abstract_repository import AbstractRepository
-
 import pytest
+
+from bookkeeper.repository.abstract_repository import AbstractRepository
 
 
 def test_cannot_create_abstract_repository():

@@ -1,6 +1,7 @@
 import pytest
 
 from bookkeeper.repository.memory_repository import MemoryRepository
+from bookkeeper.repository.repository_factory import repository_factory
 
 
 @pytest.fixture
@@ -54,7 +55,7 @@ def test_cannot_update_without_pk(repo, custom_class):
 
 
 def test_get_all(repo, custom_class):
-    objects = [custom_class() for i in range(5)]
+    objects = [custom_class() for _ in range(5)]
     for o in objects:
         repo.add(o)
     assert repo.get_all() == objects
@@ -71,9 +72,18 @@ def test_get_all_with_condition(repo, custom_class):
     assert repo.get_all({'name': '0'}) == [objects[0]]
     assert repo.get_all({'test': 'test'}) == objects
     
+    
 def test_get_all_substr(repo, custom_class):
     obj_list = [custom_class() for _ in range(7)]
     for i, obj in enumerate(obj_list):
         obj.str_field = str(i)+'smth'
         repo.add(obj)
     assert obj_list == repo.get_all_substr({'str_field' : 'smth'})
+    
+    
+def test_factory(custom_class):
+    repo_factory = repository_factory()
+    repo = repo_factory(custom_class)
+    
+    test_crud(repo, custom_class)
+

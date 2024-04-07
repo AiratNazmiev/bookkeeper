@@ -28,7 +28,7 @@ class SQLiteRepository(AbstractRepository[T]):
         self.obj_cls = cls
         self.fields.pop('pk')
         
-    def add(self, obj: T) -> int:  # TODO: int | None(?)
+    def add(self, obj: T) -> int | None:  # TODO: int | None(?)
         if getattr(obj, 'pk', None) != 0:
             raise ValueError(f'trying to add object {obj} with filled `pk` attribute')
         

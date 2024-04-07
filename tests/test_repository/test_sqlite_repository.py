@@ -1,8 +1,8 @@
 import pytest
 import sqlite3
-import os
 
 from bookkeeper.repository.sqlite_repository import SQLiteRepository
+from bookkeeper.repository.repository_factory import repository_factory
 from dataclasses import dataclass
 from datetime import datetime
 
@@ -64,8 +64,6 @@ def test_obj_adapter(repo, custom_class):
     assert obj.date_field == datetime.now().isoformat(sep='\t', timespec='minutes')
 
 
-####################
-
 def test_exception_add_with_pk(repo, custom_class):
     with pytest.raises(ValueError):
         repo.add(custom_class(pk=7))
@@ -117,3 +115,10 @@ def test_get_all_substr(repo, custom_class):
     for obj in obj_list:
         repo.add(obj)
     assert obj_list == repo.get_all_substr({'str_field' : 'smth'})
+
+
+def test_factory(custom_class):
+    repo_factory = repository_factory(TEST_DB_PATH)
+    repo = repo_factory(custom_class)
+    
+    test_crud(repo, custom_class)
