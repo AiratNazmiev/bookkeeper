@@ -169,7 +169,7 @@ class View(AbstractView):
         """ Вызывает функцию изменения бюджета """
         self.bdg_modifier(pk, new_limit, period)
 
-    def set_expense_exceeded_handler(self) -> None:
+    def budget_limit_exceeded_message(self) -> None:
         msg = "Достигнут лимит бюджета"
         QtWidgets.QMessageBox.warning(self.main_window, 'Лимит превышен!', msg)
     

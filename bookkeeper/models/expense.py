@@ -12,8 +12,8 @@ class Expense:
     Расходная операция.
     amount - сумма
     category - id категории расходов
-    expense_date - дата расхода (yyyy-mm-dd\\t03:01)
-    added_date - дата добавления в бд (yyyy-mm-dd\\t03:01)
+    expense_date - дата расхода (yyyy-mm-dd\\thh:mm)
+    added_date - дата добавления в бд (yyyy-mm-dd\\thh:mm)
     comment - комментарий
     pk - id записи в базе данных
     """
