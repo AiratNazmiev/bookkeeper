@@ -1,11 +1,11 @@
 """
-TODO
+Реализация виджетов, связанных с таблицей расходов
 """
 
 from PySide6 import QtWidgets
 from PySide6.QtCore import Qt
 
-from typing import Callable, Iterable, Any 
+from typing import Callable, Iterable, Any
 
 from bookkeeper.view.widgets import WidgetName
 from bookkeeper.models.budget import Expense
@@ -17,57 +17,57 @@ class WidgetExpenseTable(QtWidgets.QTableWidget):
     столбцы: Бюждет Траты Остаток
     строки: День, Неделя, Месяц
     """
+
     def __init__(self,
                  modify_handler: Callable[[int, str, str], None],
                  row_num: int = 50,
                  *args, **kwargs
-                 ) -> None: 
+                 ) -> None:
         super().__init__(*args, **kwargs)
-        
+
         self.cell_data: list[list[Any]] = []
-        
+
         self.modify_handler = modify_handler
         self.row_num = row_num
-        
+
         self.setColumnCount(4)
         self.setRowCount(self.row_num)
-        
+
         self._col2attr_list = [
             'expense_date', 'amount', 'category', 'comment'
         ]
-        
+
         self.setHorizontalHeaderLabels(
             ['Дата', 'Сумма', 'Категория', 'Комментарий']
         )
-        
+
         header = self.horizontalHeader()
         for i in range(4):
             if i == 3:
                 mode = QtWidgets.QHeaderView.ResizeToContents
-            else: 
+            else:
                 mode = QtWidgets.QHeaderView.Stretch
             header.setSectionResizeMode(i, mode)
-            
+
         self.setEditTriggers(QtWidgets.QAbstractItemView.DoubleClicked)
         self.cellDoubleClicked.connect(self._dclick_cell)
 
     def _col2attr(self, col: int) -> str:
         return self._col2attr_list[col]
-    
-    # TODO: row, column arg?
+
     # pylint: disable=duplicate-code
     # pylint: disable=unused-argument
     def _dclick_cell(self, row: int, col: int) -> None:
         """ Обработчик двойного нажатия на ячейку """
         self.cellChanged.connect(self._change_cell)
-        
+
     def _change_cell(self, row: int, col: int) -> None:
         """ Изменение ячейки по двойному нажатию """
         self.cellChanged.disconnect(self._change_cell)
         pk = self.cell_data[row][-1]
         upd_value = self.item(row, col).text()
         self.modify_handler(pk, self._col2attr(col), upd_value)
-        
+
     def add_data(self, cell_data: list[list[Any]]) -> None:
         """ Добавление и обновления данных таблицы """
         self.cell_data = cell_data
@@ -76,10 +76,11 @@ class WidgetExpenseTable(QtWidgets.QTableWidget):
                 self.setItem(
                     y, x, QtWidgets.QTableWidgetItem(text.capitalize())
                 )
-                
-                
+
+
 class WidgetExpenseTableBox(QtWidgets.QGroupBox):
     """ Группа с таблицей расходов """
+
     def __init__(self,
                  pk2name: Callable[[int], str],
                  modify_handler: Callable[[int, str, str], None],
@@ -87,35 +88,35 @@ class WidgetExpenseTableBox(QtWidgets.QGroupBox):
                  name: str = "Траты",
                  *args: Any, **kwargs: Any):
         super().__init__(*args, **kwargs)
-        
+
         self.cell_data: list[list[Any]] = []
         self.expense_list: list[Expense] = []
-        
+
         self.pk2name = pk2name
         self.delete_handler = delete_handler
-        
+
         self.vbox = QtWidgets.QVBoxLayout()
-        
+
         self.label = WidgetName(name)
         self.vbox.addWidget(self.label)
-        
+
         self.table = WidgetExpenseTable(modify_handler)
         self.vbox.addWidget(self.table)
-        
+
         self.dbtn = QtWidgets.QPushButton('Удалить выделенные траты')
         self.dbtn.clicked.connect(self.delete_expense)
-        
+
         self.vbox.addWidget(self.dbtn)
         self.setLayout(self.vbox)
-        
+
     def _expense2data(self, expense_list: list[Expense]) -> list[list[Any]]:
         """ Перевод трат в текстовые данные для таблицы """
         cell_data = []
         for e in expense_list:
             new_data = [
-                str(e.expense_date) if e.expense_date else "", 
-                str(e.amount) if e.amount else "", 
-                str(self.pk2name(e.category)) if e.category else "", 
+                str(e.expense_date) if e.expense_date else "",
+                str(e.amount) if e.amount else "",
+                str(self.pk2name(e.category)) if e.category else "",
                 str(e.comment) if e.comment else "",
                 e.pk
             ]
@@ -126,7 +127,7 @@ class WidgetExpenseTableBox(QtWidgets.QGroupBox):
         """ Выставления списка расходов """
         self.expense_list = expense_list
         self.cell_data = self._expense2data(self.expense_list)
-        
+
         self.table.clearContents()
         self.table.add_data(self.cell_data)
 
@@ -134,11 +135,10 @@ class WidgetExpenseTableBox(QtWidgets.QGroupBox):
         """ Удаление расходов """
         delete_list = []
         range = self.table.selectedRanges()
-        
+
         for r in range:
-            s = r.topRow()
-            e = min(r.bottomRow(), len(self.cell_data))
-            delete_list.extend([i[-1] for i in self.cell_data[s: e+1]])
-            
+            first = r.topRow()
+            last = min(r.bottomRow(), len(self.cell_data))
+            delete_list.extend([i[-1] for i in self.cell_data[first: last+1]])
+
         self.delete_handler(set(delete_list))
-    

@@ -5,9 +5,9 @@ from bookkeeper.view.edit_category import WidgetEditCategory
 from bookkeeper.models.category import Category
 
 
-add_handler = lambda name, parent: None
-delete_handler = lambda cat_name: None
-checker = lambda parent_name: None
+def add_handler(name, parent): return None
+def delete_handler(cat_name): return None
+def checker(parent_name): return None
 
 
 def test_create_window(qtbot):
@@ -34,7 +34,7 @@ def test_set_categories(qtbot):
     widget.set_categories(cats)
 
     assert widget.categories == cats
-    assert widget.add_parent.items[1:]  == [c.name for c in cats]
+    assert widget.add_parent.items[1:] == [c.name for c in cats]
 
     # Проверка структуры дерева
     assert widget.category_tree.topLevelItem(0).text(0) == "A"
@@ -90,7 +90,7 @@ def test_add_category(qtbot):
     def add_handler(name, parent):
         add_handler.was_called = True
 
-        assert name   == "AB"
+        assert name == "AB"
         assert parent == "A"
 
     add_handler.was_called = False
@@ -113,11 +113,11 @@ def test_add_category_no_parent(qtbot):
     def add_handler(name, parent):
         add_handler.was_called = True
 
-        assert name   == "A"
+        assert name == "A"
         assert parent is None
 
     add_handler.was_called = False
-    
+
     widget = WidgetEditCategory([], add_handler, delete_handler)
     qtbot.addWidget(widget)
 

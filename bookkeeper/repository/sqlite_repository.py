@@ -18,24 +18,24 @@ class SQLiteRepository(AbstractRepository[T]):
     table_name: str
     obj_cls: type
     fields: dict[str, Any]
-    
+
     def __init__(self, db_file: str, cls: type) -> None:
         super().__init__()
-                
+
         self.db_file = db_file
         self.table_name = cls.__name__.lower()
         self.fields = get_annotations(cls, eval_str=True)
         self.obj_cls = cls
         self.fields.pop('pk')
-        
-    def add(self, obj: T) -> int | None:  # TODO: int | None(?)
+
+    def add(self, obj: T) -> int | None:
         if getattr(obj, 'pk', None) != 0:
             raise ValueError(f'Unable to add object {obj} with filled `pk` attribute')
-        
+
         names = ', '.join(self.fields.keys())   # можно вычислить однажды в init
         qs = ', '.join('?' * len(self.fields))  # можно вычислить однажды в init
         values = [getattr(obj, f) for f in self.fields]
-        
+
         with sqlite3.connect(self.db_file) as con:
             cur = con.cursor()
             cur.execute('PRAGMA foreign_keys = ON')
@@ -46,12 +46,12 @@ class SQLiteRepository(AbstractRepository[T]):
             obj.pk = cur.lastrowid
         con.close()
         return obj.pk
-    
+
     def _obj_adapter(self, pk: int, row: tuple[Any]) -> T:
         obj = self.obj_cls(**dict(zip(self.fields, row)))
         obj.pk = pk
         return obj
-        
+
     def get(self, pk: int) -> T | None:
         with sqlite3.connect(self.db_file) as con:
             cur = con.cursor()
@@ -62,7 +62,7 @@ class SQLiteRepository(AbstractRepository[T]):
         if row is None:
             return None
         return self._obj_adapter(pk, row)
-    
+
     def get_all(self, where: dict[str, Any] | None = None) -> list[T]:
         with sqlite3.connect(self.db_file) as con:
             cur = con.cursor()
@@ -79,15 +79,15 @@ class SQLiteRepository(AbstractRepository[T]):
                 ).fetchall()
         con.close()
         return [self._obj_adapter(pk=r[0], row=r[1:]) for r in rows]
-    
+
     def get_all_substr(self, where: dict[str, str]) -> list[T]:
-        substr_where = {f : f'%{s}%' for f, s  in where.items()}
+        substr_where = {f: f'%{s}%' for f, s in where.items()}
         return self.get_all(substr_where)
-    
+
     def update(self, obj: T) -> None:
         if getattr(obj, 'pk', None) is None:
             raise ValueError("Unable to update object without `pk` attribute")
-        
+
         fields = ", ".join([f"{k}=?" for k in self.fields.keys()])
         values = [getattr(obj, f) for f in self.fields]
         with sqlite3.connect(self.db_file) as con:
@@ -97,17 +97,15 @@ class SQLiteRepository(AbstractRepository[T]):
                 f'WHERE ROWID={obj.pk}', values
             )
             # не обновили ни одной записи
-            if cur.rowcount == 0: 
+            if cur.rowcount == 0:
                 raise ValueError('Unable to update object with unknown pk')
         con.close()
-        
+
     def delete(self, pk: int) -> None:
         with sqlite3.connect(self.db_file) as con:
             cur = con.cursor()
             cur.execute(f'DELETE FROM {self.table_name} WHERE ROWID={pk}')
-            
+
             if cur.rowcount == 0:
                 raise ValueError('Unable to delete object with unknown pk')
         con.close()
-    
-    

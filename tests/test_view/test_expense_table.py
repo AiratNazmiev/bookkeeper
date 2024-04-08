@@ -70,10 +70,10 @@ def test_set_expenses(qtbot):
     qtbot.addWidget(widget)
     exps = [Expense(111, 2, expense_date="1984-01-02 22:22", comment="tmp"),
             Expense(222, 1, expense_date="1984-02-01 11:11")]
-    
+
     widget.set_expense(exps)
     assert widget.expense_list == exps
-    
+
     for e, w_data in zip(exps, widget.cell_data):
         assert str(e.expense_date) == w_data[0]
         assert str(e.amount) == w_data[1]

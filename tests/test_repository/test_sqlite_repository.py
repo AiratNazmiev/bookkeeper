@@ -36,28 +36,29 @@ def repo(custom_class):
 def test_crud(repo, custom_class):
     new_obj = custom_class(
         1., "2", datetime.now().isoformat(sep='\t', timespec='minutes'))
-    
+
     pk = repo.add(new_obj)
     assert pk == new_obj.pk
-    
+
     obj_get = repo.get(pk)
     assert obj_get is not None
     assert obj_get.pk == new_obj.pk
     assert obj_get.float_field == new_obj.float_field
     assert obj_get.str_field == new_obj.str_field
     assert obj_get.date_field == new_obj.date_field
-    
+
     obj_upd = custom_class(
         1.1, "2.1", datetime.now().isoformat(sep='\t', timespec='minutes'), pk)
     repo.update(obj_upd)
     assert repo.get(pk) == obj_upd
-    
+
     repo.delete(pk)
     assert repo.get(pk) is None
-    
+
 
 def test_obj_adapter(repo, custom_class):
-    obj = repo._obj_adapter(42, (4.2, "some_str", datetime.now().isoformat(sep='\t', timespec='minutes')))
+    obj = repo._obj_adapter(
+        42, (4.2, "some_str", datetime.now().isoformat(sep='\t', timespec='minutes')))
     assert obj.pk == 42
     assert obj.float_field == 4.2
     assert obj.str_field == "some_str"
@@ -114,11 +115,11 @@ def test_get_all_substr(repo, custom_class):
     obj_list = [custom_class(str_field=str(f)+'smth') for f in range(7)]
     for obj in obj_list:
         repo.add(obj)
-    assert obj_list == repo.get_all_substr({'str_field' : 'smth'})
+    assert obj_list == repo.get_all_substr({'str_field': 'smth'})
 
 
 def test_factory(custom_class):
     repo_factory = repository_factory(TEST_DB_PATH)
     repo = repo_factory(custom_class)
-    
+
     test_crud(repo, custom_class)

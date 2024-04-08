@@ -4,7 +4,7 @@
 
 from pytestqt.qt_compat import qt_api
 
-from bookkeeper.view.view import View #, handle_error
+from bookkeeper.view.view import View  # , handle_error
 from bookkeeper.models.category import Category
 from bookkeeper.models.expense import Expense
 from bookkeeper.models.budget import Budget
@@ -47,7 +47,7 @@ def test_set_budgets():
 
 
 # def test_handle_error(qtbot, monkeypatch):
-    
+
 #     def handler_err():
 #         raise ValueError('test')
 
@@ -57,15 +57,15 @@ def test_set_budgets():
 #     def func(*args):
 #         func.was_called = True
 #         return qt_api.QtWidgets.QMessageBox.Ok
-    
+
 #     view = View()
-    
+
 #     func.was_called = False
 #     widget = qt_api.QtWidgets.QWidget()
 #     qtbot.addWidget(widget)
 #     monkeypatch.setattr(qt_api.QtWidgets.QMessageBox,
 #                         "critical", func)
-    
+
 #     view._try(widget, handler_noerr)()
 #     assert func.was_called is False
 #     view._try(widget, handler_err)()
@@ -78,41 +78,42 @@ def test_set_handler(monkeypatch):
     def handler(*args):
         handler.call_count += 1
     handler.call_count = 0
-    
+
     view.set_category_add_handler(handler)
     view.add_category('name', 'parent')
     assert handler.call_count == 1
-    
+
     view.set_category_modify_handler(handler)
     view.modify_category('cat_name', 'new_name', 'new_parent')
     assert handler.call_count == 2
-    
+
     view.set_category_delete_handler(handler)
     view.delete_category('cat_name')
     assert handler.call_count == 3
-    
+
     view.set_category_name_check(handler)
     view.cat_checker('cat_name')
     assert handler.call_count == 4
-    
+
     view.set_budget_modify_handler(handler)
     view.modify_budget(1, 'new_limit', 'period')
     assert handler.call_count == 5
-    
+
     view.set_expense_add_handler(handler)
     view.add_expense('amount', 'cat_name')
     assert handler.call_count == 6
-    
+
     monkeypatch.setattr(qt_api.QtWidgets.QMessageBox,
                         "question", lambda *args: qt_api.QtWidgets.QMessageBox.Yes)
-    
+
     view.set_expense_delete_handler(handler)
     view.delete_expenses([1])
     assert handler.call_count == 7
-    
+
     view.set_expense_modify_handler(handler)
     view.modify_expense(1, 'attr', 'new_val')
     assert handler.call_count == 8
+
 
 def test_delete_expenses(monkeypatch):
     def deleter(*args):
@@ -160,5 +161,5 @@ def test_death(monkeypatch):
     view = View()
     monkeypatch.setattr(qt_api.QtWidgets.QMessageBox,
                         "warning", func)
-    view.set_expense_exceeded_handler()
+    view.budget_limit_exceeded_message()
     assert func.was_called is True

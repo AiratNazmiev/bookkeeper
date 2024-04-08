@@ -6,9 +6,9 @@ from bookkeeper.repository.sqlite_repository import SQLiteRepository
 
 
 def repository_factory(db_file: str | None = None
-                       ) -> Callable[[Model], 
+                       ) -> Callable[[Model],
                                      MemoryRepository[Model] | SQLiteRepository[Model]]:
-    
+
     if db_file is None:
         def memory_repository_factory(model: Model):
             return MemoryRepository[model]()

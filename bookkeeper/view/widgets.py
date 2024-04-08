@@ -10,6 +10,7 @@ from typing import Any
 
 
 class WidgetName(QtWidgets.QLabel):
+    """ Выставление названия виджета """
     def __init__(self, text: str,
                  *args: Any, **kwargs: Any
                  ) -> None:
@@ -74,7 +75,7 @@ class WidgetBoxInput(QtWidgets.QWidget):
         self.set_items(items)
         self.layout.addWidget(self.box, stretch=4)
 
-        self.setLayout(self.layout)  # type: ignore
+        self.setLayout(self.layout)
 
     def text(self) -> str:
         """ Получение текста виджета """

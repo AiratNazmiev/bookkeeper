@@ -23,6 +23,3 @@ class Expense:
     added_date: str = datetime.now().isoformat(sep='\t', timespec='minutes')
     comment: str = ''
     pk: int = 0
-    
-# TODO: можно добавить валидацию данных (например, нельзя создать расход с отрицательной суммой)
-# можно через @property

@@ -4,7 +4,7 @@ from PySide6 import QtWidgets
 from PySide6.QtCore import Qt
 
 from bookkeeper.models.category import Category
-from bookkeeper.view.widgets import WidgetBoxInput, WidgetLineInput
+from bookkeeper.view.widgets import WidgetBoxInput, WidgetLineInput, WidgetName
 
 
 class WidgetEditCategory(QtWidgets.QWidget):
@@ -25,15 +25,14 @@ class WidgetEditCategory(QtWidgets.QWidget):
         self.delete_handler = delete_handler
 
         # Дерево категорий
-        label_cats = QtWidgets.QLabel("<b>Список категорий</b>")
-        label_cats.setAlignment(Qt.AlignCenter)  # type: ignore
+        label_cats = WidgetName("<b>Список категорий</b>") # type: ignore
+        
         self.category_tree = QtWidgets.QTreeWidget()
         self.category_tree.setHeaderLabel("")
         self.category_tree.itemDoubleClicked.connect(self._dclick)  # type: ignore
 
         # Удаление категории
-        label_del = QtWidgets.QLabel("<b>Удаление категории</b>")
-        label_del.setAlignment(Qt.AlignCenter)  # type: ignore
+        label_del = WidgetName("<b>Удаление категории</b>")
 
         # Категория, которую нужно удалить
         self.category_delete = WidgetBoxInput("Категория", [])
@@ -41,10 +40,9 @@ class WidgetEditCategory(QtWidgets.QWidget):
         # Кнопка удаления
         self.dbtn = QtWidgets.QPushButton('Удалить')
         self.dbtn.clicked.connect(self._delete)  # type: ignore
-
+        
         # Добавление категории
-        add_label = QtWidgets.QLabel("<b>Добавление категории</b>")
-        add_label.setAlignment(Qt.AlignCenter)  # type: ignore
+        add_label = WidgetName("<b>Добавление категории</b>") # type: ignore
         self.add_parent = WidgetBoxInput("Родитель", [])
         self.add_name = WidgetLineInput("Название", "Новая категория")
 
@@ -97,8 +95,8 @@ class WidgetEditCategory(QtWidgets.QWidget):
         if parent_cat_name == WidgetEditCategory.NO_PARENT_CAT_STR:
             self.add_handler(add_name, None)
         else:
-            # pylint: disable=fixme
-            # FIXME: Нужна реализация проверок на циклические зависимости
+            # pylint: disable=todo
+            # TODO: Нужна реализация проверок на циклические зависимости
             self.cat_checker(parent_cat_name)
             self.add_handler(add_name, parent_cat_name)
 

@@ -10,7 +10,8 @@ from bookkeeper.presenter.presenter import Presenter as App  # alias for Present
 from bookkeeper.view.view import View
 from bookkeeper.repository.repository_factory import repository_factory
 
-DB_FILE = None #'db/bookkeeper.db'
+# DB_FILE = None
+DB_FILE = 'db/bookkeeper.db'
 
 if __name__ == "__main__":
     qapp = QApplication(sys.argv)

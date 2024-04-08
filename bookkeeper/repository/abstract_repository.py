@@ -15,7 +15,7 @@ class Model(Protocol):  # pylint: disable=too-few-public-methods
     """
     Модель должна содержать атрибут pk
     """
-    pk: int | None # TODO: or int | None(?)
+    pk: int | None
 
 
 T = TypeVar('T', bound=Model)
@@ -33,14 +33,14 @@ class AbstractRepository(ABC, Generic[T]):
     """
 
     @abstractmethod
-    def add(self, obj: T) -> int | None:  # TODO: or int | None(?)
+    def add(self, obj: T) -> int | None:
         """
         Добавить объект в репозиторий, вернуть id объекта,
         также записать id в атрибут pk.
         """
 
     @abstractmethod
-    def get(self, pk: int) -> T | None:  # TODO: написать про возвращение None
+    def get(self, pk: int) -> T | None:
         """ Получить объект по id """
 
     @abstractmethod
@@ -50,7 +50,7 @@ class AbstractRepository(ABC, Generic[T]):
         where - условие в виде словаря {'название_поля': значение}
         если условие не задано (по умолчанию), вернуть все записи
         """
-        
+
     @abstractmethod
     def get_all_substr(self, where: dict[str, str]) -> list[T]:
         """
