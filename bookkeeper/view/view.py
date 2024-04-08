@@ -55,7 +55,8 @@ class View(AbstractView):
             self.expenses_table
         )
         self.main_window.resize(600, 700)
-        
+    
+    @staticmethod
     def _try(widget: QtWidgets.QWidget, func: Any) -> Callable[[Any], None]:
         """ Обработка ошибки и вывод сообщения на экран """
         def inner(*args: Any, **kwargs: Any) -> None:
@@ -71,61 +72,77 @@ class View(AbstractView):
             return str(name[0])
         return ""
     
-    # Методы, связанные с категориями трат
+    ### Обработка категорий трат ###
     def create_categories(self, item_list: list[Category]) -> None:
         self.categories = item_list
         self.new_expense.set_categories(self.categories)
         self.cats_edit_window.set_categories(self.categories)
-        
-    def set_category_add_handler(self, handler: Callable[[str, str | None], None]) -> None:
+    
+    # Установка обработчиков
+    def set_category_add_handler(self, 
+                                 handler: Callable[[str, str | None], None]
+                                 ) -> None:
         self.cat_adder = self._try(self.main_window, handler)
         
-    def set_category_modify_handler(self, handler: Callable[[str, str, str | None], None]) -> None:
+    def set_category_modify_handler(self, 
+                                    handler: Callable[[str, str, str | None], None]
+                                    ) -> None:
         self.cat_modifier = self._try(self.main_window, handler)
         
-    def set_category_delete_handler(self, handler: Callable[[str], None]) -> None:
+    def set_category_delete_handler(self, 
+                                    handler: Callable[[str], None]
+                                    ) -> None:
         self.cat_deleter = self._try(self.main_window, handler)
 
     def set_category_name_check(self, handler: Callable[[str], None]) -> None:
         self.cat_checker = self._try(self.main_window, handler)
         self.cats_edit_window.set_checker(self.cat_checker)
         
+    # Вызовы обработчиков
     def add_category(self, name: str, parent: str | None) -> None:
         self.cat_adder(name, parent)
         
-        
-    ### TODO: Винимание на abstract view, на названия
-    # не все методы есть в abstract view
-
-
-    def modify_category(self, cat_name: str, new_name: str,
-                        new_parent: str | None) -> None:
+    def modify_category(self, cat_name: str, 
+                        new_name: str, 
+                        new_parent: str | None
+                        ) -> None:
         self.cat_modifier(cat_name, new_name, new_parent)
-
+        
     def delete_category(self, cat_name: str) -> None:
         self.cat_deleter(cat_name)
-
-    def set_expenses(self, exps: list[Expense]) -> None:
+        
+    ### Обработка расходов ###
+    def create_expenses(self, exps: list[Expense]) -> None:
         self.expenses = exps
-        self.expenses_table.set_expenses(self.expenses)
-
-    def set_exp_adder(self, handler: Callable[[str, str, str], None]) -> None:
+        self.expenses_table.set_expense(self.expenses)
+        
+    # Установка обработчиков
+    def set_expense_add_handler(self, 
+                                handler: Callable[[str, str, str], None]
+                                ) -> None:
         self.exp_adder = self._try(self.main_window, handler)
 
-    def set_exp_deleter(self, handler: Callable[[set[int]], None]) -> None:
+    def set_exppense_delete_handler(self, 
+                                    handler: Callable[[set[int]], None]
+                                    ) -> None:
         self.exp_deleter = self._try(self.main_window, handler)
 
-    def set_exp_modifier(self, handler: Callable[[int, str, str], None]) -> None:
+    def set_expense_modify_handler(self, 
+                                   handler: Callable[[int, str, str], None]
+                                   ) -> None:
         self.exp_modifier = self._try(self.main_window, handler)
 
+    # Вызовы обработчиков
     def add_expense(self, amount: str, cat_name: str, comment: str = "") -> None:
         self.exp_adder(amount, cat_name, comment)
 
     def delete_expenses(self, exp_pks: Iterable[int]) -> None:
         if len(list(exp_pks)) == 0:
-            QtWidgets.QMessageBox.critical(self.main_window,
-                                           'Ошибка',
-                                           'Траты для удаления не выбраны.')
+            QtWidgets.QMessageBox.critical(
+                self.main_window,
+                'Ошибка',
+                'Траты для удаления не выбраны.'
+            )
         else:
             reply = QtWidgets.QMessageBox.question(
                 self.main_window,
@@ -136,15 +153,16 @@ class View(AbstractView):
 
     def modify_expense(self, pk: int, attr: str, new_val: str) -> None:
         self.exp_modifier(pk, attr, new_val)
-
-    def set_budgets(self, budgets: list[Budget]) -> None:
+        
+    ### Обработка бюджетов ###
+    def create_budgets(self, budgets: list[Budget]) -> None:
         self.budgets = budgets
-        self.budget_table.set_budgets(self.budgets)
+        self.budget_table.set_budget(self.budgets)
 
-    def set_bdg_modifier(self,
-                         handler: Callable[['int | None', str, str], None]
-                         ) -> None:
-        """ Устанавливает метод изменения бюджета (из bookkeeper_app)"""
+    def set_budget_modify_handler(self,
+                                  handler: Callable[[int | None, str, str], None]
+                                  ) -> None:
+        """ Определение обработчика метода изменения бюджета """
         self.bdg_modifier = self._try(self.main_window, handler)
 
     def modify_budget(self, pk: int, new_limit: str, period: str) -> None:
