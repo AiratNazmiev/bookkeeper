@@ -13,19 +13,19 @@ def repo():
 
 def test_create_object():
     obj = Budget(24, 'week', 7)
-    assert obj.limit == 24
+    assert obj.lim == 24
     assert obj.period == 'week'
     assert obj.spent == 7
         
 def test_create_brief():
     obj = Budget(42, 'day')
-    assert obj.limit == 42
+    assert obj.lim == 42
     assert obj.period == 'day'
     assert obj.spent == 0
     
 def test_exception_period():
     with pytest.raises(ValueError):
-        obj = Budget(limit=123, period='eternity')
+        obj = Budget(lim=123, period='eternity')
     
 def test_can_add_to_repo(repo):
     obj = Budget(555, 'month')
