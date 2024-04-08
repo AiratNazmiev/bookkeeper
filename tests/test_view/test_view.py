@@ -106,7 +106,7 @@ def test_set_handler(monkeypatch):
     monkeypatch.setattr(qt_api.QtWidgets.QMessageBox,
                         "question", lambda *args: qt_api.QtWidgets.QMessageBox.Yes)
     
-    view.set_exppense_delete_handler(handler)
+    view.set_expense_delete_handler(handler)
     view.delete_expenses([1])
     assert handler.call_count == 7
     
@@ -119,7 +119,7 @@ def test_delete_expenses(monkeypatch):
         deleter.was_called = True
     deleter.was_called = False
     view = View()
-    view.set_exppense_delete_handler(deleter)
+    view.set_expense_delete_handler(deleter)
 
     def monkey_func_ok(*args):
         monkey_func_ok.was_called = True

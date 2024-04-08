@@ -46,7 +46,7 @@ class View(AbstractView):
                                                self.set_expense_add_handler)
         self.expenses_table = WidgetExpenseTableBox(self._category_pk2name,
                                                     self.set_expense_modify_handler,
-                                                    self.set_exppense_delete_handler)
+                                                    self.set_expense_delete_handler)
         
         # Настройка главного окна
         self.main_window = Window(
@@ -122,7 +122,7 @@ class View(AbstractView):
                                 ) -> None:
         self.exp_adder = self._try(self.main_window, handler)
 
-    def set_exppense_delete_handler(self, 
+    def set_expense_delete_handler(self, 
                                     handler: Callable[[set[int]], None]
                                     ) -> None:
         self.exp_deleter = self._try(self.main_window, handler)
