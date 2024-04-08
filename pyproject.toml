@@ -11,6 +11,7 @@ packages = [{include = "bookkeeper"}]
 python = ">=3.10,<3.12" #"^3.10"
 pytest-cov = "^4.0.0"
 pyside6 = "^6.6.3.1"
+pytest-html = "^4.1.1"
 
 
 [tool.poetry.group.dev.dependencies]
