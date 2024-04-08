@@ -1,5 +1,5 @@
 """
-Модуль описывает репозиторий, работающий c БД SQLite 
+Модуль описывает репозиторий, работающий c БД SQLite
 Реализуется на основе стандартной библиотеки sqlite3
 """
 
@@ -50,7 +50,7 @@ class SQLiteRepository(AbstractRepository[T]):
     def _obj_adapter(self, pk: int, row: tuple[Any]) -> T:
         obj = self.obj_cls(**dict(zip(self.fields, row)))
         obj.pk = pk
-        return obj
+        return obj  # type: ignore
 
     def get(self, pk: int) -> T | None:
         with sqlite3.connect(self.db_file) as con:

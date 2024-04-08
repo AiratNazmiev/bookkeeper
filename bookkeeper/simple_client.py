@@ -7,8 +7,8 @@ from bookkeeper.models.expense import Expense
 from bookkeeper.repository.memory_repository import MemoryRepository
 from bookkeeper.utils import read_tree
 
-cat_repo = MemoryRepository[Category]()
-exp_repo = MemoryRepository[Expense]()
+cat_repo = MemoryRepository[Category]()  # type: ignore
+exp_repo = MemoryRepository[Expense]()  # type: ignore
 
 cats = '''
 продукты

@@ -21,99 +21,86 @@ class AbstractView(ABC):
     def create_categories(self,
                           item_list: list[Category]
                           ) -> None:
-        pass
+        """ Создание списка категорий """
 
     @abstractmethod
     def create_expenses(self,
                         item_list: list[Expense]
                         ) -> None:
-        pass
+        """ Создание расхода """
 
     @abstractmethod
     def create_budgets(self,
                        item_list: list[Budget]
                        ) -> None:
-        pass
+        """ Создание списка бюджетов """
 
     @abstractmethod
     def set_category_add_handler(self,
                                  handler: Callable[[str, str | None], None]
                                  ) -> None:
-        pass
-
-    @abstractmethod
-    def set_category_modify_handler(self,
-                                    handler: Callable[[str, str, str | None], None]
-                                    ) -> None:
-        pass
+        """ Добавление обработчика для добавления категорий """
 
     @abstractmethod
     def set_category_delete_handler(self,
                                     handler: Callable[[str], None]
                                     ) -> None:
-        pass
+        """ Добавление обработчика для удаления категорий """
 
     @abstractmethod
     def set_category_name_check(self,
                                 handler: Callable[[str], None]
                                 ) -> None:
-        pass
+        """ Проверка названия категории """
 
     @abstractmethod
     def add_category(self, name: str, parent: str | None) -> None:
-        pass
-
-    @abstractmethod
-    def modify_category(self, cat_name: str,
-                        new_name: str,
-                        new_parent: str | None
-                        ) -> None:
-        pass
+        """ Добавление категории """
 
     @abstractmethod
     def delete_category(self, cat_name: str) -> None:
-        pass
+        """ Удаление категории """
 
     @abstractmethod
     def set_budget_modify_handler(self,
                                   handler: Callable[[int | None, str, str], None]
                                   ) -> None:
-        pass
+        """ Добавление обработчика для изменения бюджетов """
 
     @abstractmethod
     def modify_budget(self, pk: int, new_limit: str, period: str) -> None:
-        pass
+        """ Изменение бюджета """
 
     @abstractmethod
     def set_expense_add_handler(self,
                                 handler: Callable[[str, str, str], None]
                                 ) -> None:
-        pass
+        """ Добавление обработчика для добавления расходов """
 
     @abstractmethod
     def set_expense_delete_handler(self,
                                    handler: Callable[[Iterable[int]], None]
                                    ) -> None:
-        pass
+        """ Добавление обработчика для удаления расходов """
 
     @abstractmethod
     def set_expense_modify_handler(self,
                                    handler: Callable[[int, str, str], None]
                                    ) -> None:
-        pass
+        """ Добавление обработчика для изменения расходов """
 
     @abstractmethod
     def add_expense(self, amount: str, cat_name: str, comment: str = "") -> None:
-        pass
+        """ Добавление расхода """
 
     @abstractmethod
     def delete_expenses(self, exp_pks: Iterable[int]) -> None:
-        pass
+        """ Удаление расхода """
 
     @abstractmethod
     def modify_expense(self, pk: int, attr: str, new_val: str) -> None:
-        pass
+        """ Изменение расхода """
 
     @abstractmethod
     def budget_limit_exceeded_message(self) -> None:
-        pass
+        """ Сообщение о превышении одного из бюджетов """

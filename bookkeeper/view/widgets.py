@@ -1,8 +1,11 @@
 """
-Реализация базовых типов виджетов: 
+Реализация базовых типов виджетов:
 обертка для названия, строка для ввода данных
 """
-
+# pylint: disable=no-name-in-module
+# pylint: disable=c-extension-no-member
+# pylint: disable=too-few-public-methods
+# mypy: disable-error-code="attr-defined,assignment"
 from PySide6.QtCore import Qt
 from PySide6 import QtWidgets
 
@@ -11,6 +14,7 @@ from typing import Any
 
 class WidgetName(QtWidgets.QLabel):
     """ Выставление названия виджета """
+
     def __init__(self, text: str,
                  *args: Any, **kwargs: Any
                  ) -> None:
@@ -36,7 +40,7 @@ class WidgetLineInput(QtWidgets.QWidget):
         self.layout.addWidget(self.input, stretch=4)
         self.placeholder = placeholder
 
-        self.setLayout(self.layout)
+        self.setLayout(self.layout)  # type: ignore
 
     def text(self) -> str:
         """ Получение текста виджета """
@@ -56,7 +60,7 @@ class WidgetBoxInput(QtWidgets.QWidget):
 
     def __init__(self, text: str, items: list[str],
                  placeholder: str = "",
-                 max_visible_items: int = 16,
+                 max_visible_items: int = 12,
                  *args: Any, **kwargs: Any
                  ) -> None:
         super().__init__(*args, **kwargs)
@@ -75,7 +79,7 @@ class WidgetBoxInput(QtWidgets.QWidget):
         self.set_items(items)
         self.layout.addWidget(self.box, stretch=4)
 
-        self.setLayout(self.layout)
+        self.setLayout(self.layout)  # type: ignore
 
     def text(self) -> str:
         """ Получение текста виджета """

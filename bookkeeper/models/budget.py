@@ -29,13 +29,13 @@ class Budget:
         self.pk = pk
 
     def _get_day_expense(self, curr_date_str: str,
-                         expense_repository: AbstractRepository[Expense]
+                         expense_repository: AbstractRepository[Expense]  # type: ignore
                          ) -> list[Expense]:
         mask = curr_date_str
         return expense_repository.get_all_substr(where={'expense_date': mask})
 
     def _get_week_expense(self, curr_date_str: str,
-                          expense_repository: AbstractRepository[Expense]
+                          expense_repository: AbstractRepository[Expense]  # type: ignore
                           ) -> list[Expense]:
         curr_date = datetime.fromisoformat(curr_date_str)
         curr_week_day = datetime.now().weekday()
@@ -51,14 +51,16 @@ class Budget:
         return expense_list
 
     def _get_month_expense(self, curr_date_str: str,
-                           expense_repository: AbstractRepository[Expense]
+                           expense_repository: AbstractRepository[Expense]  # type: ignore
                            ) -> list[Expense]:
         mask = curr_date_str[:7]  # yyyy-mm
         return expense_repository.get_all_substr(where={'expense_date': mask})
 
-    def update(self, expense_repository: AbstractRepository[Expense]) -> None:
+    def update(self,
+               expense_repository: AbstractRepository[Expense]  # type: ignore
+               ) -> None:
         """
-        Обновление расходов за выбранный период на основе данных из репозитория 
+        Обновление расходов за выбранный период на основе данных из репозитория
         """
         curr_date_str = datetime.now().date().isoformat()  # yyyy-mm-dd
 

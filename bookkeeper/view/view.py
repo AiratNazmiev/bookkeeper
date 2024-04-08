@@ -1,6 +1,13 @@
 """
 Реализация интерфейса View, наследуемого от AbstractView
 """
+# для пропуска ошибок в библиотеках:
+# pylint: disable=no-name-in-module
+# pylint: disable=c-extension-no-member
+# pylint: disable=too-many-instance-attributes
+# pylint: disable=too-many-public-methods
+# pylint: disable=attribute-defined-outside-init
+# mypy: disable-error-code="attr-defined,union-attr,call-arg"
 from PySide6 import QtWidgets
 from typing import Callable, Iterable, Any
 
@@ -39,7 +46,7 @@ class View(AbstractView):
         )
 
         self.cats_edit_window.setWindowTitle("Редактирование категорий")
-        self.cats_edit_window.resize(600, 600)
+        self.cats_edit_window.resize(300, 400)
 
         # Получение основных элементов
         self.budget_table = WidgetBudgetTableBox(self.modify_budget)
@@ -74,7 +81,7 @@ class View(AbstractView):
             return str(name[0])
         return ""
 
-    ### Обработка категорий трат ###
+    # Обработка категорий трат
     def create_categories(self, item_list: list[Category]) -> None:
         self.categories = item_list
         self.new_expense.set_categories(self.categories)
@@ -85,11 +92,6 @@ class View(AbstractView):
                                  handler: Callable[[str, str | None], None]
                                  ) -> None:
         self.cat_adder = self._try(self.main_window, handler)
-
-    def set_category_modify_handler(self,
-                                    handler: Callable[[str, str, str | None], None]
-                                    ) -> None:
-        self.cat_modifier = self._try(self.main_window, handler)
 
     def set_category_delete_handler(self,
                                     handler: Callable[[str], None]
@@ -104,16 +106,10 @@ class View(AbstractView):
     def add_category(self, name: str, parent: str | None) -> None:
         self.cat_adder(name, parent)
 
-    def modify_category(self, cat_name: str,
-                        new_name: str,
-                        new_parent: str | None
-                        ) -> None:
-        self.cat_modifier(cat_name, new_name, new_parent)
-
     def delete_category(self, cat_name: str) -> None:
         self.cat_deleter(cat_name)
 
-    ### Обработка расходов ###
+    # Обработка расходов
     def create_expenses(self, exps: list[Expense]) -> None:
         self.expenses = exps
         self.expenses_table.set_expense(self.expenses)
@@ -149,14 +145,14 @@ class View(AbstractView):
             reply = QtWidgets.QMessageBox.question(
                 self.main_window,
                 'Удаление расходов',
-                'Вы уверены, что хотите удалить все выбранные расходы?')
+                'Вы уверены, что хотите удалить выбранные расходы?')
             if reply == QtWidgets.QMessageBox.Yes:
                 self.exp_deleter(exp_pks)
 
     def modify_expense(self, pk: int, attr: str, new_val: str) -> None:
         self.exp_modifier(pk, attr, new_val)
 
-    ### Обработка бюджетов ###
+    # Обработка бюджетов
     def create_budgets(self, budgets: list[Budget]) -> None:
         self.budgets = budgets
         self.budget_table.set_budget(self.budgets)

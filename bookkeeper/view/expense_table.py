@@ -1,9 +1,11 @@
 """
 Реализация виджетов, связанных с таблицей расходов
 """
-
+# pylint: disable=no-name-in-module
+# pylint: disable=c-extension-no-member
+# pylint: disable=too-many-instance-attributes
+# mypy: disable-error-code="attr-defined"
 from PySide6 import QtWidgets
-from PySide6.QtCore import Qt
 
 from typing import Callable, Iterable, Any
 
@@ -12,16 +14,16 @@ from bookkeeper.models.budget import Expense
 
 
 class WidgetExpenseTable(QtWidgets.QTableWidget):
-    """ 
+    """
     Виджет таблицы c расходами:
-    столбцы: Бюждет Траты Остаток
+    столбцы: Бюждет Расходы Остаток
     строки: День, Неделя, Месяц
     """
 
     def __init__(self,
                  modify_handler: Callable[[int, str, str], None],
-                 row_num: int = 50,
-                 *args, **kwargs
+                 row_num: int = 60,
+                 *args: Any, **kwargs: Any
                  ) -> None:
         super().__init__(*args, **kwargs)
 
@@ -44,7 +46,7 @@ class WidgetExpenseTable(QtWidgets.QTableWidget):
         header = self.horizontalHeader()
         for i in range(4):
             if i == 3:
-                mode = QtWidgets.QHeaderView.ResizeToContents
+                mode = QtWidgets.QHeaderView.Stretch
             else:
                 mode = QtWidgets.QHeaderView.Stretch
             header.setSectionResizeMode(i, mode)
@@ -64,9 +66,15 @@ class WidgetExpenseTable(QtWidgets.QTableWidget):
     def _change_cell(self, row: int, col: int) -> None:
         """ Изменение ячейки по двойному нажатию """
         self.cellChanged.disconnect(self._change_cell)
-        pk = self.cell_data[row][-1]
-        upd_value = self.item(row, col).text()
-        self.modify_handler(pk, self._col2attr(col), upd_value)
+        # проверка, что изменение было в поле с существующим расходом
+        try:
+            self.cell_data[row][-1]
+        except IndexError:
+            pass
+        else:
+            pk = self.cell_data[row][-1]
+            upd_value = self.item(row, col).text()
+            self.modify_handler(pk, self._col2attr(col), upd_value)
 
     def add_data(self, cell_data: list[list[Any]]) -> None:
         """ Добавление и обновления данных таблицы """
@@ -74,7 +82,7 @@ class WidgetExpenseTable(QtWidgets.QTableWidget):
         for y, row in enumerate(cell_data):
             for x, text in enumerate(row[:-1]):
                 self.setItem(
-                    y, x, QtWidgets.QTableWidgetItem(text.capitalize())
+                    y, x, QtWidgets.QTableWidgetItem(text)
                 )
 
 
@@ -85,7 +93,7 @@ class WidgetExpenseTableBox(QtWidgets.QGroupBox):
                  pk2name: Callable[[int], str],
                  modify_handler: Callable[[int, str, str], None],
                  delete_handler: Callable[[Iterable[int]], None],
-                 name: str = "Траты",
+                 name: str = "<b>Расходы</b>",
                  *args: Any, **kwargs: Any):
         super().__init__(*args, **kwargs)
 
@@ -103,7 +111,7 @@ class WidgetExpenseTableBox(QtWidgets.QGroupBox):
         self.table = WidgetExpenseTable(modify_handler)
         self.vbox.addWidget(self.table)
 
-        self.dbtn = QtWidgets.QPushButton('Удалить выделенные траты')
+        self.dbtn = QtWidgets.QPushButton('Удалить выделенные расходы')
         self.dbtn.clicked.connect(self.delete_expense)
 
         self.vbox.addWidget(self.dbtn)

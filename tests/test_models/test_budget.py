@@ -59,9 +59,9 @@ def test_update_month(repo):
         expense_date = datetime(date.year, date.month, expense_day)
         repo.add(Expense(10 * i, 1, expense_date=expense_date.date().isoformat()))
     
-    expense_date_out_1 = (expense_date - timedelta(days=50)).date().isoformat()
+    expense_date_out_1 = (expense_date - timedelta(days=42)).date().isoformat()
     repo.add(Expense(42, 1, expense_date=expense_date_out_1))
-    expense_date_out_2 = (expense_date + timedelta(days=50)).date().isoformat()
+    expense_date_out_2 = (expense_date + timedelta(days=42)).date().isoformat()
     repo.add(Expense(10, 1, expense_date=expense_date_out_2))
     
     obj.update(repo)

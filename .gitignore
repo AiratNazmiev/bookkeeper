@@ -160,7 +160,7 @@ cython_debug/
 #.idea/
 
 # text files
-.txt
+*.txt
 
 # vscode settings
 .vscode
