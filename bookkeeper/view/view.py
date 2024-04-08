@@ -1,0 +1,160 @@
+"""
+TODO
+"""
+from PySide6 import QtWidgets
+from typing import Callable, Iterable, Any
+
+from bookkeeper.view.abstract_view import AbstractView
+from bookkeeper.view.window import Window
+from bookkeeper.view.budget_table import WidgetBudgetTableBox
+from bookkeeper.view.add_expense import WidgetAddExpenseBox
+from bookkeeper.view.expense_table import WidgetExpenseTableBox
+from bookkeeper.view.edit_category import WidgetEditCategory
+
+from bookkeeper.models.category import Category
+from bookkeeper.models.expense  import Expense
+from bookkeeper.models.budget   import Budget
+
+
+class View(AbstractView):
+    """ Абстактный класс компонента View модели MVP """
+    def __init__(self) -> None:
+        super().__init__()
+        
+        # получение экземпляра QApplication
+        self.app = QtWidgets.QApplication.instance()
+        if self.app is None:
+            raise RuntimeError("Ошибка получения экземпляра QApplication")
+        
+        self.categories: list[Category] = []
+        self.expenses: list[Expense] = []
+        self.budgets: list[Budget] = []
+        
+        # Настройка окна для редактирования категорий трат
+        self.cats_edit_window = WidgetEditCategory(
+            self.categories,
+            self.set_category_add_handler,
+            self.set_category_delete_handler
+        )
+        self.cats_edit_window.setWindowTitle("Редактирование категорий")
+        self.cats_edit_window.resize(600, 600)
+        
+        # Получение основных элементов
+        self.budget_table = WidgetBudgetTableBox(self.set_budget_modify_handler)
+        self.new_expense = WidgetAddExpenseBox(self.categories,
+                                               self.cats_edit_window.show,
+                                               self.set_expense_add_handler)
+        self.expenses_table = WidgetExpenseTableBox(self._category_pk2name,
+                                                    self.set_expense_modify_handler,
+                                                    self.set_exppense_delete_handler)
+        
+        # Настройка главного окна
+        self.main_window = Window(
+            self.budget_table,
+            self.new_expense,
+            self.expenses_table
+        )
+        self.main_window.resize(600, 700)
+        
+    def _try(widget: QtWidgets.QWidget, func: Any) -> Callable[[Any], None]:
+        """ Обработка ошибки и вывод сообщения на экран """
+        def inner(*args: Any, **kwargs: Any) -> None:
+            try:
+                func(*args, **kwargs)
+            except ValueError as err:
+                QtWidgets.QMessageBox.critical(widget, 'Ошибка!', str(err))
+        return inner
+        
+    def _category_pk2name(self, pk: int) -> str:
+        name = [c.name for c in self.categories if int(c.pk) == int(pk)]
+        if len(name) > 0:
+            return str(name[0])
+        return ""
+    
+    # Методы, связанные с категориями трат
+    def create_categories(self, item_list: list[Category]) -> None:
+        self.categories = item_list
+        self.new_expense.set_categories(self.categories)
+        self.cats_edit_window.set_categories(self.categories)
+        
+    def set_category_add_handler(self, handler: Callable[[str, str | None], None]) -> None:
+        self.cat_adder = self._try(self.main_window, handler)
+        
+    def set_category_modify_handler(self, handler: Callable[[str, str, str | None], None]) -> None:
+        self.cat_modifier = self._try(self.main_window, handler)
+        
+    def set_category_delete_handler(self, handler: Callable[[str], None]) -> None:
+        self.cat_deleter = self._try(self.main_window, handler)
+
+    def set_category_name_check(self, handler: Callable[[str], None]) -> None:
+        self.cat_checker = self._try(self.main_window, handler)
+        self.cats_edit_window.set_checker(self.cat_checker)
+        
+    def add_category(self, name: str, parent: str | None) -> None:
+        self.cat_adder(name, parent)
+        
+        
+    ### TODO: Винимание на abstract view, на названия
+    # не все методы есть в abstract view
+
+
+    def modify_category(self, cat_name: str, new_name: str,
+                        new_parent: str | None) -> None:
+        self.cat_modifier(cat_name, new_name, new_parent)
+
+    def delete_category(self, cat_name: str) -> None:
+        self.cat_deleter(cat_name)
+
+    def set_expenses(self, exps: list[Expense]) -> None:
+        self.expenses = exps
+        self.expenses_table.set_expenses(self.expenses)
+
+    def set_exp_adder(self, handler: Callable[[str, str, str], None]) -> None:
+        self.exp_adder = self._try(self.main_window, handler)
+
+    def set_exp_deleter(self, handler: Callable[[set[int]], None]) -> None:
+        self.exp_deleter = self._try(self.main_window, handler)
+
+    def set_exp_modifier(self, handler: Callable[[int, str, str], None]) -> None:
+        self.exp_modifier = self._try(self.main_window, handler)
+
+    def add_expense(self, amount: str, cat_name: str, comment: str = "") -> None:
+        self.exp_adder(amount, cat_name, comment)
+
+    def delete_expenses(self, exp_pks: Iterable[int]) -> None:
+        if len(list(exp_pks)) == 0:
+            QtWidgets.QMessageBox.critical(self.main_window,
+                                           'Ошибка',
+                                           'Траты для удаления не выбраны.')
+        else:
+            reply = QtWidgets.QMessageBox.question(
+                self.main_window,
+                'Удаление трат',
+                'Вы уверены, что хотите удалить все выбранные траты?')
+            if reply == QtWidgets.QMessageBox.Yes:
+                self.exp_deleter(exp_pks)
+
+    def modify_expense(self, pk: int, attr: str, new_val: str) -> None:
+        self.exp_modifier(pk, attr, new_val)
+
+    def set_budgets(self, budgets: list[Budget]) -> None:
+        self.budgets = budgets
+        self.budget_table.set_budgets(self.budgets)
+
+    def set_bdg_modifier(self,
+                         handler: Callable[['int | None', str, str], None]
+                         ) -> None:
+        """ Устанавливает метод изменения бюджета (из bookkeeper_app)"""
+        self.bdg_modifier = self._try(self.main_window, handler)
+
+    def modify_budget(self, pk: int, new_limit: str, period: str) -> None:
+        """ Вызывает функцию изменения бюджета """
+        self.bdg_modifier(pk, new_limit, period)
+
+    def set_expense_exceeded_handler(self) -> None:
+        msg = "Достигнут лимит бюджета"
+        QtWidgets.QMessageBox.warning(self.main_window, 'Лимит превышен!', msg)
+    
+    
+    
+            
