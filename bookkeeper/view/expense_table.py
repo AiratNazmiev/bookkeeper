@@ -103,18 +103,20 @@ class WidgetExpenseTableBox(QtWidgets.QGroupBox):
         self.pk2name = pk2name
         self.delete_handler = delete_handler
 
-        self.vbox = QtWidgets.QVBoxLayout()
+        self.vbox = QtWidgets.QGridLayout()
 
         self.label = WidgetName(name)
-        self.vbox.addWidget(self.label)
 
         self.table = WidgetExpenseTable(modify_handler)
-        self.vbox.addWidget(self.table)
 
-        self.dbtn = QtWidgets.QPushButton('Удалить выделенные расходы')
+        self.dbtn = QtWidgets.QPushButton('Удалить\nвыделенное')
         self.dbtn.clicked.connect(self.delete_expense)
 
-        self.vbox.addWidget(self.dbtn)
+        #                               y  x dy dx
+        self.vbox.addWidget(self.label, 0, 0, 1, 5)
+        self.vbox.addWidget(self.table, 1, 0, 1, 5)
+        self.vbox.addWidget(self.dbtn,  2, 4, 1, 1)
+
         self.setLayout(self.vbox)
 
     def _expense2data(self, expense_list: list[Expense]) -> list[list[Any]]:

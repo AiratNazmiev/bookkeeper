@@ -1,0 +1,13 @@
+### Запуск приложения ###
+poetry run python -m bookkeeper
+
+
+### Запуск тестов ###
+poetry run python -m pytest
+poetry run python -m pytest --cov
+
+
+### Запуск статических анализаторов ###
+poetry run mypy --strict bookkeeper
+poetry run flake8 bookkeeper
+poetry run pylint bookkeeper
