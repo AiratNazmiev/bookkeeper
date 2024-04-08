@@ -28,6 +28,11 @@ testpaths = ["tests"]
 [tool.coverage.report]
 omit = ["shibokensupport/*","pyscript","signature_bootstrap.py"]
 
+[tool.mypy]
+exclude = [
+    'envs/*'
+]
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
