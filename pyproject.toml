@@ -22,10 +22,11 @@ mccabe = "^0.7.0"
 pytest-env = "^1.1.3"
 pytest-qt = "^4.4.0"
 
-# [tool.pytest.ini_options]  # turn off windows during testing
-# env = [
-# "D:QT_QPA_PLATFORM=offscreen"
-# ]
+[tool.pytest.ini_options]  # turn off windows during testing
+env = ["D:QT_QPA_PLATFORM=offscreen"]
+testpaths = ["tests"]
+[tool.coverage.report]
+omit = ["shibokensupport/*","pyscript","signature_bootstrap.py"]
 
 [build-system]
 requires = ["poetry-core"]
