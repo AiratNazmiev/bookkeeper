@@ -12,7 +12,7 @@ from bookkeeper.repository.abstract_repository import AbstractRepository, T
 
 class SQLiteRepository(AbstractRepository[T]):
     """
-    TODO
+    Реализация репозитория на основе стандартной библиотеки sqlite3
     """
     db_file: str
     table_name: str
@@ -30,7 +30,7 @@ class SQLiteRepository(AbstractRepository[T]):
         
     def add(self, obj: T) -> int | None:  # TODO: int | None(?)
         if getattr(obj, 'pk', None) != 0:
-            raise ValueError(f'trying to add object {obj} with filled `pk` attribute')
+            raise ValueError(f'Unable to add object {obj} with filled `pk` attribute')
         
         names = ', '.join(self.fields.keys())   # можно вычислить однажды в init
         qs = ', '.join('?' * len(self.fields))  # можно вычислить однажды в init
@@ -85,6 +85,9 @@ class SQLiteRepository(AbstractRepository[T]):
         return self.get_all(substr_where)
     
     def update(self, obj: T) -> None:
+        if getattr(obj, 'pk', None) is None:
+            raise ValueError("Unable to update object without `pk` attribute")
+        
         fields = ", ".join([f"{k}=?" for k in self.fields.keys()])
         values = [getattr(obj, f) for f in self.fields]
         with sqlite3.connect(self.db_file) as con:
@@ -95,7 +98,7 @@ class SQLiteRepository(AbstractRepository[T]):
             )
             # не обновили ни одной записи
             if cur.rowcount == 0: 
-                raise ValueError('attempt to update object with unknown primary key')
+                raise ValueError('Unable to update object with unknown pk')
         con.close()
         
     def delete(self, pk: int) -> None:
@@ -104,7 +107,7 @@ class SQLiteRepository(AbstractRepository[T]):
             cur.execute(f'DELETE FROM {self.table_name} WHERE ROWID={pk}')
             
             if cur.rowcount == 0:
-                raise ValueError('attempt to delete object with unknown primary key')
+                raise ValueError('Unable to delete object with unknown pk')
         con.close()
     
     

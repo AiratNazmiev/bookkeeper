@@ -78,8 +78,8 @@ def test_set_budgets(qtbot):
     widget.set_budget(budget_list)
     assert widget.budget_list == budget_list
     for b, w_data in zip(budget_list, widget.cell_data):
-        assert str(b.limit) == w_data[0]
+        assert str(b.lim) == w_data[0]
         assert str(b.spent) == w_data[1]
-        assert str(int(b.limit) - int(b.spent)) == w_data[2]
+        assert str(int(b.lim) - int(b.spent)) == w_data[2]
         assert b.pk == w_data[3]
     assert widget.cell_data[2] == ["-", "", "", None]

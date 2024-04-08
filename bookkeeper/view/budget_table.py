@@ -110,9 +110,9 @@ class WidgetBudgetTableBox(QtWidgets.QGroupBox):
                 cell_data.append(["-", "", "", None])
             else:
                 budget = curr_budget_list[0]
-                new_data = ([str(budget.limit),
+                new_data = ([str(budget.lim),
                         str(budget.spent),
-                        str(int(budget.limit) - int(budget.spent)),
+                        str(int(budget.lim) - int(budget.spent)),
                         budget.pk])
                 cell_data.append(new_data)  # type: ignore
         return cell_data       
