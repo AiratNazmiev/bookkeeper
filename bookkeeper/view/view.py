@@ -33,20 +33,21 @@ class View(AbstractView):
         # Настройка окна для редактирования категорий трат
         self.cats_edit_window = WidgetEditCategory(
             self.categories,
-            self.set_category_add_handler,
-            self.set_category_delete_handler
+            self.add_category,
+            self.delete_category
         )
+        
         self.cats_edit_window.setWindowTitle("Редактирование категорий")
         self.cats_edit_window.resize(600, 600)
         
         # Получение основных элементов
-        self.budget_table = WidgetBudgetTableBox(self.set_budget_modify_handler)
+        self.budget_table = WidgetBudgetTableBox(self.modify_budget)
         self.new_expense = WidgetAddExpenseBox(self.categories,
                                                self.cats_edit_window.show,
-                                               self.set_expense_add_handler)
+                                               self.add_expense)
         self.expenses_table = WidgetExpenseTableBox(self._category_pk2name,
-                                                    self.set_expense_modify_handler,
-                                                    self.set_expense_delete_handler)
+                                                    self.modify_expense,
+                                                    self.delete_expenses)
         
         # Настройка главного окна
         self.main_window = Window(

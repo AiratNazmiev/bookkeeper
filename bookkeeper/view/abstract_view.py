@@ -5,6 +5,8 @@ TODO
 from abc import ABC, abstractmethod
 from typing import Iterable, Callable
 
+from bookkeeper.view.window import Window
+
 from bookkeeper.models.category import Category
 from bookkeeper.models.expense import Expense
 from bookkeeper.models.budget import Budget
@@ -12,6 +14,9 @@ from bookkeeper.models.budget import Budget
 
 class AbstractView(ABC):
     """Абстактный класс компонента View """
+    # Окно приложения
+    main_window: Window
+    
     @abstractmethod
     def create_categories(self, 
                           item_list: list[Category]
@@ -110,5 +115,5 @@ class AbstractView(ABC):
         pass
         
     @abstractmethod
-    def set_expense_exceeded_handler(self) -> None:
+    def budget_limit_exceeded_message(self) -> None:
         pass
